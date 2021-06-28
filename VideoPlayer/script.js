@@ -1,56 +1,87 @@
-const video = document.getElementById('video');
-const play = document.getElementById('play');
-const stop = document.getElementById('stop');
-const progress = document.getElementById('progress');
-const timestamp = document.getElementById('timestamp');
-
+const video = document.getElementById("video");
+const play = document.getElementById("play");
+const stop = document.getElementById("stop");
+const progress = document.getElementById("progress");
+const timestamp = document.getElementById("timestamp");
+const mute = document.getElementById("mute");
+const volinc = document.getElementById("volinc");
+const voldec = document.getElementById("voldec");
+var fullscreen = document.getElementById("fs");
 
 //play & pause video
-function toggleVideoStatus(){
-    if(video.paused){
-        video.play();
-    }
-    else{
-        video.pause();
-    }
+function toggleVideoStatus() {
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
+  }
 }
-
 
 //update play/pause icon
-function updatePlayIcon(){
-    if(video.paused){
-        play.innerHTML ='<i class="fa fa-play fa-2x"></i>';
-    }
-    else{
-        play.innerHTML ='<i class="fa fa-pause fa-2x"></i>';
-    }
+function updatePlayIcon() {
+  if (video.paused) {
+    play.innerHTML = '<i class="fa fa-play fa-2x"></i>';
+  } else {
+    play.innerHTML = '<i class="fa fa-pause fa-2x"></i>';
+  }
 }
 
-
 //update progress & timestamp
-function updateProgress(){
-    return true;
+function updateProgress() {
+  progress.value = (video.currentTime / video.duration) * 100;
+
+  let mins = Math.floor(video.currentTime / 60);
+  if (mins < 10) {
+    mins = "0" + String(mins);
+  }
+
+  let secs = Math.floor(video.currentTime % 60);
+  if (secs < 10) {
+    secs = "0" + String(secs);
+  }
+
+  timestamp.innerHTML = `${mins}:${secs}`;
 }
 
 // set video time to progress
-function setVideoProgress(){
-    return true;
+function setVideoProgress() {
+  video.currentTime = (+progress.value * video.duration) / 100;
 }
 
 // stop video
-function stopVideo(){
-    video.currentTime = 0;
-    video.pause();
+function stopVideo() {
+  video.currentTime = 0;
+  video.pause();
 }
 
-video.addEventListener('click',toggleVideoStatus);
-video.addEventListener('pause',updatePlayIcon);
-video.addEventListener('play',updatePlayIcon);
-video.addEventListener('timeupdate',updateProgress);
+video.addEventListener("click", toggleVideoStatus);
+video.addEventListener("pause", updatePlayIcon);
+video.addEventListener("play", updatePlayIcon);
+video.addEventListener("timeupdate", updateProgress);
 
-play.addEventListener('click',toggleVideoStatus);
+play.addEventListener("click", toggleVideoStatus);
 
-stop.addEventListener('click',stopVideo);
+stop.addEventListener("click", stopVideo);
 
-progress.addEventListener('change',setVideoProgress);
+progress.addEventListener("change", setVideoProgress);
 
+mute.addEventListener("click", function (e) {
+  video.muted = !video.muted;
+  
+});
+
+volinc.addEventListener("click", function (e) {
+  alterVolume("+");
+});
+voldec.addEventListener("click", function (e) {
+  alterVolume("-");
+});
+
+var alterVolume = function (dir) {
+  var currentVolume = Math.floor(video.volume * 10) / 10;
+  if (dir === "+") {
+    if (currentVolume < 1) video.volume += 0.1;
+  } else if (dir === "-") {
+    if (currentVolume > 0) video.volume -= 0.1;
+  }
+};
